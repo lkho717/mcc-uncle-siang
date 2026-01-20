@@ -1,10 +1,6 @@
 services:
   - type: web
     name: mcc-uncle-siang
-    env: static
-    buildCommand: echo "No build required"
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    env: node
+    buildCommand: npm install
+    startCommand: npm start

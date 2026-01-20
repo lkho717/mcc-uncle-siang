@@ -138,7 +138,16 @@
               <p>时间：11:00am-3:00pm</p>
             </div>
           </div>
-          <form class="space-y-6">
+          <form class="space-y-6" id="register-form">
+            <input
+              class="hidden"
+              type="text"
+              name="company"
+              autocomplete="off"
+              tabindex="-1"
+              aria-hidden="true"
+            />
+            <input type="hidden" name="form_time" value="" />
             <div class="space-y-2">
               <label class="block font-black text-black text-xl">姓名*</label>
               <input
@@ -146,6 +155,7 @@
                 placeholder="请写下您的名字..."
                 required=""
                 type="text"
+                name="name"
               />
             </div>
             <div class="space-y-2">
@@ -157,6 +167,7 @@
                 placeholder="电话号码...上课链接通过号码发给你"
                 required=""
                 type="tel"
+                name="phone"
               />
             </div>
             <div class="space-y-2">
@@ -168,6 +179,7 @@
                 placeholder="请写下您的电子邮箱 (Email)..."
                 required=""
                 type="email"
+                name="email"
               />
             </div>
             <div class="space-y-2">
@@ -177,6 +189,7 @@
                 placeholder="请输入你的居住城市"
                 required=""
                 type="text"
+                name="city"
               />
             </div>
             <div class="space-y-2">
@@ -186,6 +199,7 @@
                 placeholder="您的性别是..."
                 required=""
                 type="text"
+                name="gender"
               />
             </div>
             <div class="pt-4 flex justify-center">
@@ -196,6 +210,10 @@
                 >> 点击这里完成注册 <<
               </button>
             </div>
+            <p
+              id="form-status"
+              class="text-center text-base font-bold text-black"
+            ></p>
           </form>
         </div>
       </div>
@@ -295,4 +313,42 @@
       </div>
     </section>
   </body>
+  <script>
+    const form = document.getElementById("register-form");
+    const statusEl = document.getElementById("form-status");
+    const formTimeInput = form?.querySelector('input[name="form_time"]');
+
+    if (form && statusEl) {
+      if (formTimeInput) {
+        formTimeInput.value = Date.now().toString();
+      }
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        statusEl.textContent = "提交中，请稍候...";
+
+        try {
+          const formData = new FormData(form);
+          if (formTimeInput && !formTimeInput.value) {
+            formTimeInput.value = Date.now().toString();
+          }
+          const payload = Object.fromEntries(formData.entries());
+
+          const response = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error("submit_failed");
+          }
+
+          statusEl.textContent = "报名成功！我们会尽快联系您。";
+          form.reset();
+        } catch (error) {
+          statusEl.textContent = "提交失败，请稍后再试。";
+        }
+      });
+    }
+  </script>
 </html>

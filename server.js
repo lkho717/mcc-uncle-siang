@@ -17,6 +17,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true });
+});
+
 app.post("/api/register", async (req, res) => {
   const { name, phone, email, city, gender, company, form_time: formTime } =
     req.body;
@@ -74,7 +78,11 @@ app.post("/api/register", async (req, res) => {
     res.json({ ok: true });
   } catch (error) {
     console.error("Email send failed:", error);
-    res.status(500).json({ ok: false, error: "send_failed" });
+    res.status(500).json({
+      ok: false,
+      error: "send_failed",
+      message: error?.message || "unknown_error"
+    });
   }
 });
 

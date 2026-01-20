@@ -349,13 +349,15 @@
           });
 
           if (!response.ok) {
-            throw new Error("submit_failed");
+            const data = await response.json().catch(() => ({}));
+            const detail = data?.message || data?.error || "submit_failed";
+            throw new Error(detail);
           }
 
           statusEl.textContent = "报名成功！我们会尽快联系您。";
           form.reset();
         } catch (error) {
-          statusEl.textContent = "提交失败，请稍后再试。";
+          statusEl.textContent = `提交失败，请稍后再试。(${error.message})`;
         }
       });
     }

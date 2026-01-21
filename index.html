@@ -142,15 +142,6 @@
             </div>
           </div>
           <form class="space-y-6" id="register-form">
-            <input
-              class="hidden"
-              type="text"
-              name="company"
-              autocomplete="off"
-              tabindex="-1"
-              aria-hidden="true"
-            />
-            <input type="hidden" name="form_time" value="" />
             <div class="space-y-2">
               <label class="block font-black text-black text-xl">姓名*</label>
               <input
@@ -325,40 +316,32 @@
   <script>
     const form = document.getElementById("register-form");
     const statusEl = document.getElementById("form-status");
-    const formTimeInput = form?.querySelector('input[name="form_time"]');
 
     if (form && statusEl) {
-      if (formTimeInput) {
-        formTimeInput.value = Date.now().toString();
-      }
-      form.addEventListener("submit", async (event) => {
+      form.addEventListener("submit", (event) => {
         event.preventDefault();
-        statusEl.textContent = "提交中，请稍候...";
 
-        try {
-          const formData = new FormData(form);
-          if (formTimeInput && !formTimeInput.value) {
-            formTimeInput.value = Date.now().toString();
-          }
-          const payload = Object.fromEntries(formData.entries());
+        const name = form.querySelector('input[name="name"]').value.trim();
+        const phone = form.querySelector('input[name="phone"]').value.trim();
+        const email = form.querySelector('input[name="email"]').value.trim();
+        const city = form.querySelector('input[name="city"]').value.trim();
+        const gender = form.querySelector('input[name="gender"]').value.trim();
 
-          const response = await fetch("/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) {
-            const data = await response.json().catch(() => ({}));
-            const detail = data?.message || data?.error || "submit_failed";
-            throw new Error(detail);
-          }
-
-          statusEl.textContent = "报名成功！我们会尽快联系您。";
-          form.reset();
-        } catch (error) {
-          statusEl.textContent = `提交失败，请稍后再试。(${error.message})`;
+        if (!name || !phone || !email || !city || !gender) {
+          statusEl.textContent = "请填写所有必填项目。";
+          return;
         }
+
+        const message = `你好，我想要参加Uncle Siang TikTok直播&短视频Master Class实战分享会！
+
+姓名：${name}
+电话号码：${phone}
+邮箱地址：${email}
+城市：${city}
+性别：${gender}`;
+
+        const whatsappUrl = `https://wa.me/60105059527?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, "_blank");
       });
     }
   </script>
